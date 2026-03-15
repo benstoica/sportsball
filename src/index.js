@@ -23,5 +23,5 @@ app.locals.broadcastMatchCreated = broadcastMatchCreated;
 server.listen(PORT, HOST, () => {
     const baseUrl = HOST === '0.0.0.0' ? `http://localhost:${PORT}` : `http://${HOST}:${PORT}`
     console.log(`server is running on ${baseUrl}`);
-    console.log(`WebSocket Server is runnon on ${baseUrl.replace('http', 'ws')}/ws`);
+    console.log(`WebSocket Server is running on ${baseUrl.replace('http', 'ws')}/ws`);
 })
