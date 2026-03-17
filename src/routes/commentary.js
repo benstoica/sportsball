@@ -8,7 +8,7 @@ import { db } from "../db/db.js";
 const MAX_LIMIT = 100;
 const DEFAULT_LIMIT = 100;
 
-export const commentaryRouter = Router();
+export const commentaryRouter = Router({ mergeParams: true });
 
 commentaryRouter.get('/', async (req, res) => {
     const paramsResult = matchIdParamSchema.safeParse(req.params);
@@ -73,7 +73,12 @@ commentaryRouter.post('/', async (req, res) => {
             .returning();
 
         if(res.app.locals.broadcastCommentary) {
-            res.app.locals.broadcastCommentary(result.matchId, result);
+
+            try {
+                res.app.locals.broadcastCommentary(result.matchId, result);
+            } catch(broadcastError) {
+                console.error('Failed to broadcast commentary:', broadcastError);
+            }
         }
 
         return res.status(201).json({ data: result });
