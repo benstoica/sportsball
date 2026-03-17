@@ -75,12 +75,14 @@ function handleMessage(socket, data) {
         message = JSON.parse(data.toString());
     } catch {
         sendJson(socket, { type: 'error', message: 'Invalid JSON'});
+        return;
     }
 
     if(message?.type === "subscribe" && Number.isInteger(message.matchId)) {
-        if(!socket.subscriptions.has(message.matchId && socket.subscriptions.size >= MAX_SUBSCRIPTIONS_PER_SOCKET))
+        if(!socket.subscriptions.has(message.matchId) && socket.subscriptions.size >= MAX_SUBSCRIPTIONS_PER_SOCKET)
         {
             sendJson(socket, { type: 'error', message: 'Too many subscriptions'});
+            return;
         }
         subscribe(message.matchId, socket);
         socket.subscriptions.add(message.matchId);
@@ -128,14 +130,13 @@ export function attachWebSocketServer(server) {
         });
 
         socket.on('error', () => {
+            console.error('Websocket error');
             socket.terminate();
         });
 
         socket.on('close', () => {
             cleanupSubscriptions(socket);
         })
-
-        socket.on('error', console.error)
     });
 
     const interval = setInterval(() => {
